@@ -1,5 +1,6 @@
 package duke.blueprint.scilife;
 
+import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -8,11 +9,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    private final LatLng DEFAULT_LOCATION = new LatLng(35.9940, -78.8986);
+
     private GoogleMap mMap;
+
+    private Quest[] locations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +26,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        locations  = new Quest[]{
+                new Quest("Raleigh Quest", 35.7796, -78.6382,
+                        BitmapFactory.decodeResource(getResources(), R.drawable.flowericon)),
+                new Quest("Durham Quest", 35.9940, -78.8986,
+                        BitmapFactory.decodeResource(getResources(), R.drawable.treeicon))
+        };
+
     }
 
 
@@ -38,9 +50,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        for(Quest quest : locations){
+            quest.addToMap(mMap);
+        }
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(DEFAULT_LOCATION));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 12.0f));
     }
 }
